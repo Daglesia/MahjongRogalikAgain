@@ -58,16 +58,7 @@ public class ComboManager : CardColleague
 
         if (cards.Count < 3) return;
 
-        if (IsValidCombo())
-        {
-            foreach (Card c in selectedCards)
-                c.FlyAndDisappear();
-        }
-        else
-        {
-            foreach (Card c in selectedCards)
-                c.ResetCard();
-        }
+        Mediator?.NotifyComboAssembled(IsValidCombo(), selectedCards);
 
         selectedCards.Clear();
         cards.Clear();

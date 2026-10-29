@@ -54,4 +54,16 @@ public class Card : CardColleague
                  .SetLink(gameObject)
                  .OnComplete(() => Destroy(gameObject));
     }
+
+    public void FlyToSpot(Vector3 position)
+    {
+        GetComponent<Collider2D>().enabled = false;
+        transform.DOKill();
+        transform.DOMove(position, 0.5f)
+                 .SetDelay(0.15f)
+                 .SetEase(Ease.InOutQuad)
+                 .SetLink(gameObject)
+                 .OnComplete(() => Destroy(gameObject));
+        GetComponent<Collider2D>().enabled = true;
+    }
 }
