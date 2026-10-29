@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ComboManager : MonoBehaviour
+public class ComboManager : CardColleague
 {
     private List<ICard> cards = new List<ICard>();
+    private readonly List<Card> selectedCards = new List<Card>();
 
     private static readonly int[][] PERMUTATIONS =
     {
@@ -50,14 +51,25 @@ public class ComboManager : MonoBehaviour
 
     private bool IsValidCombo() => IsSequence() || IsTriplet();
 
-    public void AddCardToCombo(ICard card) {
-        cards.Add(card);
-        if(cards.Count == 3)
+    public void AddCardToCombo(Card card)
+    {
+        selectedCards.Add(card);
+        cards.Add(card.GetCardBase());
+
+        if (cards.Count < 3) return;
+
+        if (IsValidCombo())
         {
-            if (IsValidCombo())
-            {
-                Debug.Log("dododo");
-            }
+            foreach (Card c in selectedCards)
+                c.FlyAndDisappear();
         }
+        else
+        {
+            foreach (Card c in selectedCards)
+                c.ResetCard();
+        }
+
+        selectedCards.Clear();
+        cards.Clear();
     }
 }
