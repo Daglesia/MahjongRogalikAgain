@@ -6,9 +6,9 @@ public class Deck
 
     public int Count => cards.Count;
 
-    public Deck(ICard cards)
+    public Deck(IEnumerable<ICard> cards)
     {
-        this.cards = (List<ICard>)cards;
+        this.cards = new List<ICard>(cards);
     }
 
     public void Shuffle()
