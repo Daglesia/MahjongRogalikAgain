@@ -4,8 +4,15 @@ using DG.Tweening;
 [RequireComponent(typeof(Collider2D))]
 public class Card : CardColleague
 {
-    [SerializeField] private CardDefinition cardDefinition;
+    private CardDefinition cardDefinition;
     [SerializeField] private float liftAmount = 0.3f;
+
+    public void Initialize(CardBase cardBase)
+    {
+        cardDefinition = new CardDefinition();
+        cardDefinition.SetCard(cardBase);
+        cardDefinition.SetClicked(false);
+    }
 
     public CardBase GetCardBase()
     {
@@ -13,7 +20,6 @@ public class Card : CardColleague
     }
 
     private Vector3 basePosition;
-    [SerializeField] private Transform placeToFlyTo;
 
     void Start()
     {
@@ -43,12 +49,12 @@ public class Card : CardColleague
                  .SetLink(gameObject);
     }
 
-    public void FlyAndDisappear()
+    public void FlyAndDisappear(Vector3 placeToFlyTo)
     {
         GetComponent<Collider2D>().enabled = false;
 
         transform.DOKill();
-        transform.DOMove(new Vector3(placeToFlyTo.position.x, placeToFlyTo.position.y, transform.position.z), 0.5f)
+        transform.DOMove(new Vector3(placeToFlyTo.x, placeToFlyTo.y, placeToFlyTo.z), 0.5f)
                  .SetDelay(0.15f)
                  .SetEase(Ease.InOutQuad)
                  .SetLink(gameObject)
@@ -62,8 +68,7 @@ public class Card : CardColleague
         transform.DOMove(position, 0.5f)
                  .SetDelay(0.15f)
                  .SetEase(Ease.InOutQuad)
-                 .SetLink(gameObject)
-                 .OnComplete(() => Destroy(gameObject));
+                 .SetLink(gameObject);
         GetComponent<Collider2D>().enabled = true;
     }
 }

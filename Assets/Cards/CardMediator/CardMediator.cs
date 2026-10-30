@@ -30,7 +30,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
             foreach (Card card in selectedCards)
             {
                 positions.Add(card.GetComponent<Transform>().position);
-                card.FlyAndDisappear();
+                card.FlyAndDisappear(comboTarget);
             }
             for(int i = 0; i < selectedCards.Count; i++)
             {
