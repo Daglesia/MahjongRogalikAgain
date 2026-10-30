@@ -2,24 +2,36 @@ using UnityEngine;
 using DG.Tweening;
 
 [RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(CardArt))]
 public class Card : CardColleague
 {
-    private CardDefinition cardDefinition;
+    [SerializeField] private CardBase startingCard;
     [SerializeField] private float liftAmount = 0.3f;
 
-    public void Initialize(CardBase cardBase)
+    private CardDefinition cardDefinition;
+    private Vector3 basePosition;
+
+    public CardDefinition Definition => cardDefinition;
+
+    void Awake()
+    {
+        if (startingCard != null) Initialize(startingCard);
+    }
+
+    public Card Initialize(CardBase cardBase)
     {
         cardDefinition = new CardDefinition();
         cardDefinition.SetCard(cardBase);
         cardDefinition.SetClicked(false);
+
+        if (TryGetComponent<CardArt>(out var art)) art.Refresh();
+        return this;
     }
 
     public CardBase GetCardBase()
     {
         return cardDefinition.GetCard();
     }
-
-    private Vector3 basePosition;
 
     void Start()
     {

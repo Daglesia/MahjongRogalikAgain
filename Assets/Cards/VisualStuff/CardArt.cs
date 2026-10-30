@@ -1,20 +1,22 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Card))]
 public class CardArt : MonoBehaviour
 {
-    [SerializeField] private CardDefinition card;
+    private Card card;
     private SpriteRenderer cardTypeArt;
 
     void Awake()
     {
+        card = GetComponent<Card>();
         cardTypeArt = transform.Find("CardTypeArt").GetComponent<SpriteRenderer>();
     }
 
-    void Start() => Refresh();
+    // void Start() => Refresh();
 
     public void Refresh()
     {
-        var sprite = card.GetCardSprite();
+        var sprite = card.Definition?.GetCardSprite();
         if (sprite != null) cardTypeArt.sprite = sprite;
     }
 }

@@ -13,7 +13,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
     {
         _comboManager.SetMediator(this);
         _deckManager.SetMediator(this);
-    } 
+    }
 
     void ICardMediator.NotifyCardSelected(Card card)
     {
@@ -32,9 +32,12 @@ public class CardMediator : MonoBehaviour, ICardMediator
                 positions.Add(card.GetComponent<Transform>().position);
                 card.FlyAndDisappear(comboTarget);
             }
-            for(int i = 0; i < selectedCards.Count; i++)
+            for (int i = 0; i < selectedCards.Count; i++)
             {
-                Instantiate(cardPrefab, cardSpawnPosition.position, Quaternion.identity).GetComponent<Card>().FlyToSpot(positions[i]);
+                Instantiate(cardPrefab, cardSpawnPosition.position, Quaternion.identity)
+                    .GetComponent<Card>()
+                    .Initialize(_deckManager.DrawNextCard())
+                    .FlyToSpot(positions[i]);
             }
         }
         else

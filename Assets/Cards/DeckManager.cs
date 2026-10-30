@@ -13,9 +13,8 @@ public class DeckManager : CardColleague
         deck = deckGeneration.GenerateInitial();
     }
 
-    // Update is called once per frame
-    void Update()
+    public CardBase DrawNextCard()
     {
-        
+        return (CardBase)deck.Draw();
     }
 }

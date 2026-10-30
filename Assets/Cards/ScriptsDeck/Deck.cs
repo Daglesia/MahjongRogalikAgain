@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Deck
 {
@@ -15,7 +16,7 @@ public class Deck
     {
         for (int i = cards.Count - 1; i > 0; i--)
         {
-            int j = UnityEngine.Random.Range(0, i + 1);
+            int j = Random.Range(0, i + 1);
             (cards[i], cards[j]) = (cards[j], cards[i]);
         }
     }
@@ -25,6 +26,7 @@ public class Deck
         if (cards.Count == 0) return null;
         var card = cards[^1];
         cards.RemoveAt(cards.Count - 1);
+        Debug.Log(cards.GetType()+"getdubaj");
         return card;
     }
 

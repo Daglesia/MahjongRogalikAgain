@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class CardDefinition : MonoBehaviour
+public class CardDefinition
 {
-    [SerializeField] private CardBase card;
-    private bool isClicked = false;
+    private CardBase card;
+    private bool isClicked;
 
     public void SetCard(CardBase newCard) => card = newCard;
 
