@@ -6,16 +6,16 @@ public class CardArt : MonoBehaviour
     private Card card;
     private SpriteRenderer cardTypeArt;
 
-    void Awake()
+    private void EnsureReferences()
     {
-        card = GetComponent<Card>();
-        cardTypeArt = transform.Find("CardTypeArt").GetComponent<SpriteRenderer>();
+        if (card == null) card = GetComponent<Card>();
+        if (cardTypeArt == null)
+            cardTypeArt = transform.Find("CardTypeArt").GetComponent<SpriteRenderer>();
     }
-
-    // void Start() => Refresh();
 
     public void Refresh()
     {
+        EnsureReferences();
         var sprite = card.Definition?.GetCardSprite();
         if (sprite != null) cardTypeArt.sprite = sprite;
     }

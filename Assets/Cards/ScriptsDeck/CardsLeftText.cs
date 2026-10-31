@@ -1,16 +1,28 @@
+using TMPro;
 using UnityEngine;
 
 public class CardsLeftText : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private DeckManager deckManager;
+    [SerializeField] private TextMeshProUGUI label;
+
     void Start()
     {
-        
+        // deckManager.GetCount();
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnEnable()
     {
-        
+        deckManager.CardDrawn += OnCardDrawn;
+    }
+
+    void OnDisable()
+    {
+        deckManager.CardDrawn -= OnCardDrawn;
+    }
+
+    private void OnCardDrawn(CardBase card, int cardsLeft)
+    {
+        label.text = cardsLeft.ToString();
     }
 }

@@ -75,12 +75,17 @@ public class Card : CardColleague
 
     public void FlyToSpot(Vector3 position)
     {
-        GetComponent<Collider2D>().enabled = false;
+        var col = GetComponent<Collider2D>();
+        col.enabled = false;
         transform.DOKill();
         transform.DOMove(position, 0.5f)
-                 .SetDelay(0.15f)
-                 .SetEase(Ease.InOutQuad)
-                 .SetLink(gameObject);
-        GetComponent<Collider2D>().enabled = true;
+                .SetDelay(0.15f)
+                .SetEase(Ease.InOutQuad)
+                .SetLink(gameObject)
+                .OnComplete(() =>
+                {
+                    basePosition = position;
+                    col.enabled = true;
+                });
     }
 }

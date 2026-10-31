@@ -6,6 +6,7 @@ public class ComboManager : CardColleague
 {
     private List<ICard> cards = new List<ICard>();
     private readonly List<Card> selectedCards = new List<Card>();
+    private ComboPieces comboPieces = new ComboPieces();
 
     private static readonly int[][] PERMUTATIONS =
     {
@@ -42,6 +43,7 @@ public class ComboManager : CardColleague
             if (cards[1].GetCardValues().Contains(value) &&
                 cards[2].GetCardValues().Contains(value))
             {
+                Debug.Log(value+" cyckiii");
                 return true;
             }
         }
@@ -59,6 +61,18 @@ public class ComboManager : CardColleague
         if (cards.Count < 3) return;
 
         Mediator?.NotifyComboAssembled(IsValidCombo(), selectedCards);
+
+        if (IsValidCombo())
+        {
+            foreach (Card selectedCard in selectedCards)
+            {
+                ComboActiveStatus comboStatus;
+                if (IsTriplet()) comboStatus = ComboActiveStatus.ActiveByTriplet;
+                else comboStatus = ComboActiveStatus.ActiveBySequence;
+                // todo get card value that was used in this sequence/triplet
+                // comboPieces.SetActiveStatus(selectedCard.GetCardBase().GetCardValues(), comboStatus);
+            } 
+        }
 
         selectedCards.Clear();
         cards.Clear();

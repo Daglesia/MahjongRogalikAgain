@@ -17,7 +17,6 @@ public class CardMediator : MonoBehaviour, ICardMediator
 
     void ICardMediator.NotifyCardSelected(Card card)
     {
-        Debug.Log("yay");
         _comboManager.AddCardToCombo(card);
     }
 
