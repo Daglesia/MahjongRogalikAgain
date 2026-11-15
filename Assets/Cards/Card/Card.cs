@@ -1,18 +1,18 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using DG.Tweening;
 
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(CardArt))]
 public class Card : CardColleague
 {
     [SerializeField] private CardBase startingCard;
-    [SerializeField] private float liftAmount = 0.3f;
 
     private CardDefinition cardDefinition;
     private Vector3 basePosition;
+    private bool baseSet;
 
     public CardDefinition Definition => cardDefinition;
+    public Vector3 BasePosition => basePosition;
 
     void Awake()
     {
@@ -29,33 +29,30 @@ public class Card : CardColleague
         return this;
     }
 
-    public CardBase GetCardBase()
-    {
-        return cardDefinition.GetCard();
-    }
-    private bool baseSet;
+    public CardBase GetCardBase() => cardDefinition.GetCard();
 
+    // Called by HandLayout when it assigns this card a slot
     public void SetBasePosition(Vector3 worldPos)
     {
         basePosition = worldPos;
         baseSet = true;
     }
 
+    public void Deselect() => cardDefinition.SetClicked(false);
+
+    public void SetInteractable(bool value) => GetComponent<Collider2D>().enabled = value;
+
     void Start()
     {
         if (!baseSet) basePosition = transform.position;
         Mediator = FindAnyObjectByType<CardMediator>();
     }
+
     void OnMouseDown()
     {
         if (cardDefinition.GetIsClicked()) return;
 
         cardDefinition.SetClicked(true);
-        transform.DOKill();
-        transform.DOMoveY(basePosition.y + liftAmount, 0.15f)
-                 .SetEase(Ease.OutQuad)
-                 .SetLink(gameObject);
-
         Mediator?.NotifyCardSelected(this);
     }
 
@@ -65,43 +62,5 @@ public class Card : CardColleague
         if (cardDefinition.GetIsClicked()) return;   // selected cards can't be discarded
 
         Mediator?.NotifyCardDiscardRequested(this);
-    }
-
-    public void ResetCard()
-    {
-        cardDefinition.SetClicked(false);
-        transform.DOKill();
-        transform.DOMoveY(basePosition.y, 0.15f)
-                 .SetEase(Ease.OutQuad)
-                 .SetLink(gameObject);
-    }
-
-    public void FlyAndDisappear(Vector3 placeToFlyTo)
-    {
-        GetComponent<Collider2D>().enabled = false;
-        transform.SetParent(null, true);
-
-        transform.DOKill();
-        transform.DOMove(placeToFlyTo, 0.5f)
-                .SetDelay(0.15f)
-                .SetEase(Ease.InOutQuad)
-                .SetLink(gameObject)
-                .OnComplete(() => Destroy(gameObject));
-    }
-
-    public void FlyToSpot(Vector3 position)
-    {
-        var col = GetComponent<Collider2D>();
-        col.enabled = false;
-        transform.DOKill();
-        transform.DOMove(position, 0.5f)
-                .SetDelay(0.15f)
-                .SetEase(Ease.InOutQuad)
-                .SetLink(gameObject)
-                .OnComplete(() =>
-                {
-                    basePosition = position;
-                    col.enabled = true;
-                });
     }
 }

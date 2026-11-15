@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections;
 using UnityEngine;
 
 public class CardMediator : MonoBehaviour, ICardMediator
@@ -7,85 +6,37 @@ public class CardMediator : MonoBehaviour, ICardMediator
     [SerializeField] private ComboManager _comboManager;
     [SerializeField] private DeckManager _deckManager;
     [SerializeField] private DiscardManager _discardManager;
-    [SerializeField] private GameObject cardPrefab;
-    [SerializeField] private Transform cardSpawnPosition;
-    [SerializeField] private Vector2 comboTarget = new Vector2(-7f, -3.11f);
-
-    [SerializeField] private HandLayout hand; 
-
-    [SerializeField] private int startingHandSize = 6;
-    [SerializeField] private float drawInterval = 0.1f;
-
-    private void Start() => StartCoroutine(DrawStartingHand());
-
-    private Card SpawnCardIntoHand(CardBase cardBase, int siblingIndex = -1)
-    {
-        if (cardBase == null) return null;
-
-        var go = Instantiate(cardPrefab, cardSpawnPosition.position, Quaternion.identity, hand.transform);
-        var card = go.GetComponent<Card>().Initialize(cardBase);
-        if (siblingIndex >= 0) go.transform.SetSiblingIndex(siblingIndex);
-        return card;
-    }
-
-    private IEnumerator DrawStartingHand()
-    {
-        for (int i = 0; i < startingHandSize; i++)
-        {
-            SpawnCardIntoHand(_deckManager.DrawNextCard());
-            yield return new WaitForSeconds(drawInterval);
-        }
-    }
-    
+    [SerializeField] private HandManager _handManager;
 
     private void Awake()
     {
         _comboManager.SetMediator(this);
         _deckManager.SetMediator(this);
         _discardManager.SetMediator(this);
-
+        _handManager.SetMediator(this);
     }
+
+    private void Start() => _handManager.DealStartingHand(_deckManager.DrawNextCard);
 
     void ICardMediator.NotifyCardSelected(Card card)
     {
+        _handManager.LiftCard(card);
         _comboManager.AddCardToCombo(card);
     }
 
-void ICardMediator.NotifyComboAssembled(bool isValidCombo, List<Card> selectedCards)
-{
-    if (isValidCombo)
+    void ICardMediator.NotifyComboAssembled(bool isValidCombo, List<Card> selectedCards)
     {
-        var slots = new List<int>();
-        foreach (Card card in selectedCards)
-            slots.Add(card.transform.GetSiblingIndex());   // read BEFORE they unparent
-
-        foreach (Card card in selectedCards)
-            card.FlyAndDisappear(comboTarget);
-
-        slots.Sort();
-        foreach (int slot in slots)
-            SpawnCardIntoHand(_deckManager.DrawNextCard(), slot);
+        if (isValidCombo)
+            _handManager.RemoveAndReplace(selectedCards, _deckManager.DrawNextCard);
+        else
+            _handManager.LowerCards(selectedCards);
     }
-    else
+
+    void ICardMediator.NotifyCardDiscardRequested(Card card)
     {
-        foreach (Card card in selectedCards)
-            card.ResetCard();
+        if (card.Definition.GetIsClicked()) return;
+        if (!_discardManager.TryUseDiscard()) return;   // no discards left
+
+        _handManager.RemoveAndReplace(new List<Card> { card }, _deckManager.DrawNextCard);
     }
-}
-void ICardMediator.NotifyCardDiscardRequested(Card card)
-{
-    if (card.Definition.GetIsClicked()) return;
-    if (!_discardManager.TryUseDiscard()) return;   // no discards left
-
-    Vector3 spot = card.transform.position;
-    card.FlyAndDisappear(comboTarget);
-
-    var next = _deckManager.DrawNextCard();
-    if (next == null) return;                       // deck empty, nothing to replace with
-
-    Instantiate(cardPrefab, cardSpawnPosition.position, Quaternion.identity)
-        .GetComponent<Card>()
-        .Initialize(next)
-        .FlyToSpot(spot);
-}
 }
