@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: NebulaBackground
-  m_Shader: {fileID: 4800000, guid: e260cfa7296ee7642b167f1eb5be5023, type: 3}
+  m_Shader: {fileID: 4800000, guid: dcd9bdb51b8f5ad45964720c9ef5db40, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -41,10 +41,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Density: 4.1
     - _EnableExternalAlpha: 0
+    - _Intensity: 0.7
+    - _Scale: 1.6
+    - _Seed: 0
+    - _Speed: 0.03
+    - _StarDensity: 0.9999
+    - _Steps: 22.8
     - _ZWrite: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorA: {r: 0.31132078, g: 0, b: 0, a: 1}
+    - _ColorB: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

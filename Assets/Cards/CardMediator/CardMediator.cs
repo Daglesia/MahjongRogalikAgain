@@ -6,6 +6,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
 {
     [SerializeField] private ComboManager _comboManager;
     [SerializeField] private DeckManager _deckManager;
+    [SerializeField] private DiscardManager _discardManager;
     [SerializeField] private GameObject cardPrefab;
     [SerializeField] private Transform cardSpawnPosition;
     [SerializeField] private Vector2 comboTarget = new Vector2(-7f, -3.11f);
@@ -41,7 +42,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
     {
         _comboManager.SetMediator(this);
         _deckManager.SetMediator(this);
-
+        _discardManager.SetMediator(this);
 
     }
 
@@ -70,5 +71,21 @@ void ICardMediator.NotifyComboAssembled(bool isValidCombo, List<Card> selectedCa
         foreach (Card card in selectedCards)
             card.ResetCard();
     }
+}
+void ICardMediator.NotifyCardDiscardRequested(Card card)
+{
+    if (card.Definition.GetIsClicked()) return;
+    if (!_discardManager.TryUseDiscard()) return;   // no discards left
+
+    Vector3 spot = card.transform.position;
+    card.FlyAndDisappear(comboTarget);
+
+    var next = _deckManager.DrawNextCard();
+    if (next == null) return;                       // deck empty, nothing to replace with
+
+    Instantiate(cardPrefab, cardSpawnPosition.position, Quaternion.identity)
+        .GetComponent<Card>()
+        .Initialize(next)
+        .FlyToSpot(spot);
 }
 }

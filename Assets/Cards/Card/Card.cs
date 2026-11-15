@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using DG.Tweening;
 
 [RequireComponent(typeof(Collider2D))]
@@ -56,6 +57,14 @@ public class Card : CardColleague
                  .SetLink(gameObject);
 
         Mediator?.NotifyCardSelected(this);
+    }
+
+    void OnMouseOver()
+    {
+        if (Mouse.current == null || !Mouse.current.rightButton.wasPressedThisFrame) return;
+        if (cardDefinition.GetIsClicked()) return;   // selected cards can't be discarded
+
+        Mediator?.NotifyCardDiscardRequested(this);
     }
 
     public void ResetCard()
