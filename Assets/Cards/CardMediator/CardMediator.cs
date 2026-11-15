@@ -7,6 +7,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
     [SerializeField] private DeckManager _deckManager;
     [SerializeField] private DiscardManager _discardManager;
     [SerializeField] private HandManager _handManager;
+    [SerializeField] private InventoryManager _inventoryManager;
 
     private void Awake()
     {
@@ -14,6 +15,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
         _deckManager.SetMediator(this);
         _discardManager.SetMediator(this);
         _handManager.SetMediator(this);
+        _inventoryManager.SetMediator(this);
     }
 
     private void Start() => _handManager.DealStartingHand(_deckManager.DrawNextCard);
@@ -39,4 +41,14 @@ public class CardMediator : MonoBehaviour, ICardMediator
 
         _handManager.RemoveAndReplace(new List<Card> { card }, _deckManager.DrawNextCard);
     }
+
+    void ICardMediator.NotifyItemClicked(int slotIndex)
+{
+    ItemBase item = _inventoryManager.GetItem(slotIndex);
+    if (item == null) return;
+
+    var context = new ItemContext(_deckManager, _discardManager, _handManager);
+    if (item.Use(context) && item.Consumable)
+        _inventoryManager.RemoveItem(slotIndex);
+}
 }

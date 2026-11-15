@@ -24,4 +24,10 @@ public class DiscardManager : CardColleague
         DiscardsChanged?.Invoke(discardsLeft);
         return true;
     }
+
+    public void AddDiscards(int amount)
+{
+    discardsLeft += amount;
+    DiscardsChanged?.Invoke(discardsLeft);
+}
 }
