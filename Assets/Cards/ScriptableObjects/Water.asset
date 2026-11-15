@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e75897ee26c8f4ab9fa9d8a2b8b767, type: 3}
   m_Name: Water
   m_EditorClassIdentifier: Assembly-CSharp::BasicCard
-  value: 0
+  art: {fileID: 8643791210477826723, guid: ee348d285930c9b4b9502099affb6ba5, type: 3}
+  value: 8
   description: 
-  art: {fileID: -6033167070654062095, guid: ee348d285930c9b4b9502099affb6ba5, type: 3}

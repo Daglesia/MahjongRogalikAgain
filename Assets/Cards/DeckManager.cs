@@ -9,7 +9,7 @@ public class DeckManager : CardColleague
     public int GetCount() => deck.Count;
     public event Action<CardBase, int> CardDrawn;
 
-    void Start()
+    void Awake()
     {
         // todo somewhere down the line - different classes have different decks
         deck = deckGeneration.GenerateInitial();

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e75897ee26c8f4ab9fa9d8a2b8b767, type: 3}
   m_Name: Wind
   m_EditorClassIdentifier: Assembly-CSharp::BasicCard
-  value: 0
+  art: {fileID: 8375170410343290040, guid: 9a0c5d8867e7c8e4f87ab5ada94b8a46, type: 3}
+  value: 9
   description: 
-  art: {fileID: -6033167070654062095, guid: ee348d285930c9b4b9502099affb6ba5, type: 3}

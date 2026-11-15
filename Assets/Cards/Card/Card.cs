@@ -32,13 +32,19 @@ public class Card : CardColleague
     {
         return cardDefinition.GetCard();
     }
+    private bool baseSet;
+
+    public void SetBasePosition(Vector3 worldPos)
+    {
+        basePosition = worldPos;
+        baseSet = true;
+    }
 
     void Start()
     {
-        basePosition = transform.position;
+        if (!baseSet) basePosition = transform.position;
         Mediator = FindAnyObjectByType<CardMediator>();
     }
-
     void OnMouseDown()
     {
         if (cardDefinition.GetIsClicked()) return;
@@ -64,13 +70,14 @@ public class Card : CardColleague
     public void FlyAndDisappear(Vector3 placeToFlyTo)
     {
         GetComponent<Collider2D>().enabled = false;
+        transform.SetParent(null, true);
 
         transform.DOKill();
-        transform.DOMove(new Vector3(placeToFlyTo.x, placeToFlyTo.y, placeToFlyTo.z), 0.5f)
-                 .SetDelay(0.15f)
-                 .SetEase(Ease.InOutQuad)
-                 .SetLink(gameObject)
-                 .OnComplete(() => Destroy(gameObject));
+        transform.DOMove(placeToFlyTo, 0.5f)
+                .SetDelay(0.15f)
+                .SetEase(Ease.InOutQuad)
+                .SetLink(gameObject)
+                .OnComplete(() => Destroy(gameObject));
     }
 
     public void FlyToSpot(Vector3 position)
