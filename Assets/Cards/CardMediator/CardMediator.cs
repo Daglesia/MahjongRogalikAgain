@@ -9,6 +9,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
     [SerializeField] private HandManager _handManager;
     [SerializeField] private InventoryManager _inventoryManager;
     [SerializeField] private AudioManager _audioManager;
+    [SerializeField] private ScoreManager _scoreManager;
 
     private TargetedItemBase pendingItem;
     private int pendingSlot = -1;
@@ -21,6 +22,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
         _handManager.SetMediator(this);
         _inventoryManager.SetMediator(this);
         _audioManager.SetMediator(this);
+        _scoreManager.SetMediator(this);
     }
 
     private void Start() => _handManager.DealStartingHand(_deckManager.DrawNextCard);
@@ -57,6 +59,8 @@ public class CardMediator : MonoBehaviour, ICardMediator
         _audioManager.PlaySound(comboType == ComboType.Triplet
             ? SoundType.TripletPlayed
             : SoundType.SequencePlayed);
+
+        _scoreManager.ScoreCombo(comboType, selectedCards);
 
         _handManager.RemoveAndReplace(selectedCards, _deckManager.DrawNextCard);
     }
