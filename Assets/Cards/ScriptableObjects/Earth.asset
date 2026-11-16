@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e75897ee26c8f4ab9fa9d8a2b8b767, type: 3}
   m_Name: Earth
   m_EditorClassIdentifier: Assembly-CSharp::BasicCard
-  art: {fileID: 4760431437108694301, guid: ee348d285930c9b4b9502099affb6ba5, type: 3}
+  art: {fileID: 3664312899074910703, guid: bd01c8262967e9245ae4101b061688e7, type: 3}
   value: 6
   description: 

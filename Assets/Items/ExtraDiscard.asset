@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ceb0e87299269b41bf3432aa913e79a, type: 3}
   m_Name: ExtraDiscard
   m_EditorClassIdentifier: Assembly-CSharp::ExtraDiscardItem
-  icon: {fileID: 0}
-  itemName: 
+  icon: {fileID: -6033167070654062095, guid: ee348d285930c9b4b9502099affb6ba5, type: 3}
+  itemName: Extrodisca
   description: 
   consumable: 1
   amount: 1

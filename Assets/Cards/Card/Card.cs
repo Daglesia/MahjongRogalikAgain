@@ -63,4 +63,10 @@ public class Card : CardColleague
 
         Mediator?.NotifyCardDiscardRequested(this);
     }
+
+    public void ReplaceCardBase(CardBase newBase)
+{
+    cardDefinition.SetCard(newBase);
+    if (TryGetComponent<CardArt>(out var art)) art.Refresh();
+}
 }

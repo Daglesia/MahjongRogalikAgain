@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e75897ee26c8f4ab9fa9d8a2b8b767, type: 3}
   m_Name: Fire
   m_EditorClassIdentifier: Assembly-CSharp::BasicCard
-  art: {fileID: 1817279336261601474, guid: ee348d285930c9b4b9502099affb6ba5, type: 3}
+  art: {fileID: -4360063429176786975, guid: 0a15fb351c04dd94f8383be5ca2144e5, type: 3}
   value: 7
   description: 

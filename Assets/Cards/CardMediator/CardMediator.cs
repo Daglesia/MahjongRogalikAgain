@@ -9,6 +9,9 @@ public class CardMediator : MonoBehaviour, ICardMediator
     [SerializeField] private HandManager _handManager;
     [SerializeField] private InventoryManager _inventoryManager;
 
+    private TargetedItemBase pendingItem;
+    private int pendingSlot = -1;
+
     private void Awake()
     {
         _comboManager.SetMediator(this);
@@ -22,6 +25,12 @@ public class CardMediator : MonoBehaviour, ICardMediator
 
     void ICardMediator.NotifyCardSelected(Card card)
     {
+        if (pendingItem != null)
+        {
+            ResolveItemTarget(card);
+            return;
+        }
+
         _handManager.LiftCard(card);
         _comboManager.AddCardToCombo(card);
     }
@@ -36,19 +45,61 @@ public class CardMediator : MonoBehaviour, ICardMediator
 
     void ICardMediator.NotifyCardDiscardRequested(Card card)
     {
+        if (pendingItem != null) { CancelTargeting(); return; }   // right click cancels targeting
+
         if (card.Definition.GetIsClicked()) return;
-        if (!_discardManager.TryUseDiscard()) return;   // no discards left
+        if (!_discardManager.TryUseDiscard()) return;
 
         _handManager.RemoveAndReplace(new List<Card> { card }, _deckManager.DrawNextCard);
     }
 
     void ICardMediator.NotifyItemClicked(int slotIndex)
-{
-    ItemBase item = _inventoryManager.GetItem(slotIndex);
-    if (item == null) return;
+    {
+        ItemBase item = _inventoryManager.GetItem(slotIndex);
+        if (item == null) return;
 
-    var context = new ItemContext(_deckManager, _discardManager, _handManager);
-    if (item.Use(context) && item.Consumable)
-        _inventoryManager.RemoveItem(slotIndex);
-}
+        if (item is TargetedItemBase targeted)
+        {
+            // clicking the armed item again cancels it
+            if (pendingSlot == slotIndex) CancelTargeting();
+            else BeginTargeting(targeted, slotIndex);
+            return;
+        }
+
+        CancelTargeting();
+        var context = new ItemContext(_deckManager, _discardManager, _handManager);
+        if (item.Use(context) && item.Consumable)
+            _inventoryManager.RemoveItem(slotIndex);
+    }
+
+    // ---------- Item targeting ----------
+
+    private void BeginTargeting(TargetedItemBase item, int slot)
+    {
+        pendingItem = item;
+        pendingSlot = slot;
+        // todo: highlight valid targets / the armed slot
+    }
+
+    private void CancelTargeting()
+    {
+        pendingItem = null;
+        pendingSlot = -1;
+    }
+
+    private void ResolveItemTarget(Card card)
+    {
+        // Card.OnMouseDown already flagged it as clicked; targeting must not count as a combo selection
+        card.Deselect();
+
+        if (!pendingItem.CanTarget(card)) return;   // invalid target: stay armed, player can pick another
+
+        var context = new ItemContext(_deckManager, _discardManager, _handManager);
+        if (!pendingItem.UseOnCard(context, card)) return;
+
+        if (pendingItem.Consumable)
+            _inventoryManager.RemoveItem(pendingSlot);
+
+        CancelTargeting();
+    }
 }
