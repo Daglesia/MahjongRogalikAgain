@@ -35,6 +35,15 @@ public class CardMediator : MonoBehaviour, ICardMediator
         _comboManager.AddCardToCombo(card);
     }
 
+    void ICardMediator.NotifyCardDeselected(Card card)
+    {
+        // While targeting an item, clicks on selected cards shouldn't do anything special
+        if (pendingItem != null) return;
+
+        _comboManager.RemoveCardFromCombo(card);
+        _handManager.LowerCards(new List<Card> { card });
+    }
+
     void ICardMediator.NotifyComboAssembled(bool isValidCombo, List<Card> selectedCards)
     {
         if (isValidCombo)

@@ -77,4 +77,13 @@ public class ComboManager : CardColleague
         selectedCards.Clear();
         cards.Clear();
     }
+
+    public void RemoveCardFromCombo(Card card)
+    {
+        int index = selectedCards.IndexOf(card);
+        if (index < 0) return;
+
+        selectedCards.RemoveAt(index);
+        cards.RemoveAt(index);   // cards and selectedCards are kept in the same order
+    }
 }

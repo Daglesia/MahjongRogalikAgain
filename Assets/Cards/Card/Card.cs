@@ -50,7 +50,12 @@ public class Card : CardColleague
 
     void OnMouseDown()
     {
-        if (cardDefinition.GetIsClicked()) return;
+        if (cardDefinition.GetIsClicked())
+        {
+            // clicking a selected card un-selects it
+            Mediator?.NotifyCardDeselected(this);
+            return;
+        }
 
         cardDefinition.SetClicked(true);
         Mediator?.NotifyCardSelected(this);
