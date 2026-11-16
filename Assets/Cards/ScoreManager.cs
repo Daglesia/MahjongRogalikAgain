@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -85,7 +86,12 @@ public class ScoreManager : CardColleague
         {
             PendingScore score = queue.Dequeue();
 
-            if (comboLabel != null) comboLabel.text = score.Text;
+            if (comboLabel != null)
+            {
+                comboLabel.text = score.Text;
+                comboLabel.transform.DOKill(true);   // finish any previous punch so the scale resets cleanly
+                comboLabel.transform.DOPunchScale(new Vector3(0.3f, 0.3f, 0f), 0.4f, 8, 0.5f);
+            }
             yield return new WaitForSeconds(announceDuration);
             if (comboLabel != null) comboLabel.text = string.Empty;
 
