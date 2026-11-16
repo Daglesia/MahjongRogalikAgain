@@ -6,6 +6,6 @@ public interface ICardMediator
     void NotifyCardSelected(Card card);
     void NotifyCardDeselected(Card card);
     void NotifyCardDiscardRequested(Card card);
-    void NotifyComboAssembled(bool isValidCombo, List<Card> selectedCards);
+    void NotifyComboAssembled(ComboType comboType, List<Card> selectedCards);
     void NotifyItemClicked(int slotIndex);
 }

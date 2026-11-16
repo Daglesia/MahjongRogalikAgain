@@ -2,8 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public enum ComboType { None, Sequence, Triplet }
+
 public class ComboManager : CardColleague
 {
+    public ComboType LastComboType { get; private set; } = ComboType.None;
+
     private List<ICard> cards = new List<ICard>();
     private readonly List<Card> selectedCards = new List<Card>();
     private ComboPieces comboPieces = new ComboPieces();
@@ -51,7 +55,12 @@ public class ComboManager : CardColleague
         return false;
     }
 
-    private bool IsValidCombo() => IsSequence() || IsTriplet();
+    private ComboType GetComboType()
+    {
+        if (IsTriplet()) return ComboType.Triplet;
+        if (IsSequence()) return ComboType.Sequence;
+        return ComboType.None;
+    }
 
     public void AddCardToCombo(Card card)
     {
@@ -60,18 +69,21 @@ public class ComboManager : CardColleague
 
         if (cards.Count < 3) return;
 
-        Mediator?.NotifyComboAssembled(IsValidCombo(), selectedCards);
+        ComboType comboType = GetComboType();
+        LastComboType = comboType;
+        Mediator?.NotifyComboAssembled(comboType, selectedCards);
 
-        if (IsValidCombo())
+        if (comboType != ComboType.None)
         {
+            ComboActiveStatus comboStatus = comboType == ComboType.Triplet
+                ? ComboActiveStatus.ActiveByTriplet
+                : ComboActiveStatus.ActiveBySequence;
+
             foreach (Card selectedCard in selectedCards)
             {
-                ComboActiveStatus comboStatus;
-                if (IsTriplet()) comboStatus = ComboActiveStatus.ActiveByTriplet;
-                else comboStatus = ComboActiveStatus.ActiveBySequence;
                 // todo get card value that was used in this sequence/triplet
                 // comboPieces.SetActiveStatus(selectedCard.GetCardBase().GetCardValues(), comboStatus);
-            } 
+            }
         }
 
         selectedCards.Clear();
