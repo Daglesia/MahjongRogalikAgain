@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DeckManager : CardColleague
 {
-    [SerializeField] private DeckGeneration deckGeneration;
     private Deck deck;
 
     public int GetCount() => deck.Count;
@@ -11,9 +11,14 @@ public class DeckManager : CardColleague
 
     void Awake()
     {
-        // todo somewhere down the line - different classes have different decks
-        deck = deckGeneration.GenerateInitial();
-        deck.Shuffle();
+        List<CardBase> runDeck = RunManager.Instance.State?.Deck;
+        if (runDeck == null)
+        {
+            Debug.LogError("DeckManager: no run deck found. Start a run before entering combat.", this);
+            runDeck = new List<CardBase>();
+        }
+
+        deck = new Deck(runDeck);
     }
 
     public CardBase DrawNextCard()

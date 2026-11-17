@@ -14,9 +14,9 @@ public class DeckGeneration : ScriptableObject
 
     [SerializeField] private List<CardEntry> entries = new List<CardEntry>();
 
-    public Deck GenerateInitial()
+    public List<CardBase> GenerateInitialCards()
     {
-        var list = new List<ICard>();
+        var list = new List<CardBase>();
 
         foreach (CardEntry entry in entries)
         {
@@ -26,6 +26,8 @@ public class DeckGeneration : ScriptableObject
                 list.Add(entry.card);
         }
 
-        return new Deck(list);
+        return list;
     }
+
+    public Deck GenerateInitial() => new Deck(GenerateInitialCards());
 }

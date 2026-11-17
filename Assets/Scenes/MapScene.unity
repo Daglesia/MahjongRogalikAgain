@@ -119,6 +119,51 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &206531866
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 206531868}
+  - component: {fileID: 206531867}
+  m_Layer: 0
+  m_Name: RunManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &206531867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206531866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2341d41aab7aa0644a857e5ff4bb83f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunManager
+  startingDeck: {fileID: 11400000, guid: 98cb13f84b9664f478d9924ebac36b7c, type: 2}
+--- !u!4 &206531868
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206531866}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &614363691
 GameObject:
   m_ObjectHideFlags: 0
@@ -164,6 +209,8 @@ MonoBehaviour:
   nodeWidth: 0.8
   lineWidth: 0.05
   cameraMargin: 1
+  playerSprite: {fileID: 0}
+  playerSize: 0.35
 --- !u!114 &614363693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,9 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26cfdb69ed6c4544e9ee932439754b29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapGenerator
-  columnCount: 11
-  addBossFloor: 1
-  forkChance: 0.4
+  segmentLengths: 030000000300000002000000
   minForkLength: 1
   maxForkLength: 2
   columnSpacing: 1.5
@@ -400,3 +445,4 @@ SceneRoots:
   - {fileID: 2090357744}
   - {fileID: 614363694}
   - {fileID: 792328078}
+  - {fileID: 206531868}
