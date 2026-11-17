@@ -1,16 +1,21 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class CardData : Singleton<RunManager>
+[Serializable]
+public class MapNode
 {
-    public RunState State { get; private set; }
-    public System.Random Rng { get; private set; }
+    public int Id;
+    public int Column;
+    public int Lane;
+    public LocationType Type;
+    public Vector2 Position;
+    public List<int> NextIds = new List<int>();
+}
 
-    public void StartNewRun(int? seed = null)
-    {
-        int s = seed ?? System.Environment.TickCount;
-        State = new RunState { Seed = s };
-        Rng = new System.Random(s);
-        // generate map, starting deck...
-    }
-
-    public void LoadRun(RunState saved) { /* restore state, rebuild Rng */ }
+[Serializable]
+public class MapData
+{
+    public int Seed;
+    public List<MapNode> Nodes = new List<MapNode>();
 }

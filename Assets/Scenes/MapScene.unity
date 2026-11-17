@@ -119,6 +119,143 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &614363691
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 614363694}
+  - component: {fileID: 614363693}
+  - component: {fileID: 614363692}
+  m_Layer: 0
+  m_Name: Map
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &614363692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614363691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 885bfc49398b27f4d8c79350db82a985, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapView
+  generator: {fileID: 614363693}
+  catalog:
+  - {fileID: 11400000, guid: 05af2558d011ca9499e99660f929db5f, type: 2}
+  - {fileID: 11400000, guid: 42075815501c34d478cbdced143b5c4a, type: 2}
+  - {fileID: 11400000, guid: c9a626f097732a94eb15732bc86dee9c, type: 2}
+  - {fileID: 11400000, guid: 02889db1aec58c54db5937821ab202dc, type: 2}
+  - {fileID: 11400000, guid: d6971d8c1434b704e82b1a701e55fb6a, type: 2}
+  - {fileID: 11400000, guid: 5cd9becdcabe5a344aca9b2fec852116, type: 2}
+  - {fileID: 11400000, guid: df3a1f6a44536e7428b1000d99127bc7, type: 2}
+  - {fileID: 11400000, guid: a3c5151aa9098bf4c8566a6854af7033, type: 2}
+  lineMaterial: {fileID: 2100000, guid: 90304aa86ecf9994893cac324a3a01eb, type: 2}
+  cam: {fileID: 2090357743}
+  nodeWidth: 0.8
+  lineWidth: 0.05
+  cameraMargin: 1
+--- !u!114 &614363693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614363691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26cfdb69ed6c4544e9ee932439754b29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapGenerator
+  columnCount: 11
+  addBossFloor: 1
+  forkChance: 0.4
+  minForkLength: 1
+  maxForkLength: 2
+  columnSpacing: 1.5
+  laneOffset: 1.2
+  jitter: 0.15
+  weights:
+  - type: 1
+    weight: 5
+  - type: 4
+    weight: 2
+  - type: 3
+    weight: 2
+  - type: 5
+    weight: 2
+  - type: 6
+    weight: 2
+  - type: 7
+    weight: 1
+--- !u!4 &614363694
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614363691}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &792328076
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 792328078}
+  - component: {fileID: 792328077}
+  m_Layer: 0
+  m_Name: LocationMediator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &792328077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792328076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a68a5e82b0ea6314da4dc2ddef6b1413, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocationMediator
+--- !u!4 &792328078
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792328076}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2090357741
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,3 +398,5 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 2090357744}
+  - {fileID: 614363694}
+  - {fileID: 792328078}
