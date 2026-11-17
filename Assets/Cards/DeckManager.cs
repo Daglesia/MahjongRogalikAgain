@@ -11,14 +11,20 @@ public class DeckManager : CardColleague
 
     void Awake()
     {
-        List<CardBase> runDeck = RunManager.Instance.State?.Deck;
-        if (runDeck == null)
+        CombatContext ctx = SceneLoader.Instance.CurrentCombat;
+
+        List<CardBase> source = ctx != null
+            ? new List<CardBase>(ctx.Deck)
+            : RunManager.Instance.State?.Deck;   // fallback: playing CombatScene directly in the editor
+
+        if (source == null)
         {
-            Debug.LogError("DeckManager: no run deck found. Start a run before entering combat.", this);
-            runDeck = new List<CardBase>();
+            Debug.LogError("DeckManager: no deck available. Start a run before entering combat.", this);
+            source = new List<CardBase>();
         }
 
-        deck = new Deck(runDeck);
+        deck = new Deck(source);
+        deck.Shuffle();
     }
 
     public CardBase DrawNextCard()

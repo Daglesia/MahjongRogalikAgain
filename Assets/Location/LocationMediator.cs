@@ -32,8 +32,27 @@ public class LocationMediator : MonoBehaviour, ILocationMediator
 
     public void NotifyLocationEnter(Location location)
     {
-        Debug.Log($"Entered {location.GetLocationType()} (node {location.NodeId})");
-        // todo: load combat / shop / etc. based on location.GetLocationType()
+        LocationType type = location.GetLocationType();
+        Debug.Log($"Entered {type} (node {location.NodeId})");
+
+        switch (type)
+        {
+            case LocationType.Combat:
+            case LocationType.BossCombat:
+                EnterCombat(type);
+                break;
+
+            // todo: Shop, EquivalentExchange, Stone, CardFreebie, BlackHole
+            default:
+                break;
+        }
+    }
+
+    private void EnterCombat(LocationType type)
+    {
+        RunState state = RunManager.Instance.State;
+        var context = CombatContext.FromRun(state, type);
+        SceneLoader.Instance.StartCombat(context);
     }
 
     public void NotifyLocationExit(Location location)
