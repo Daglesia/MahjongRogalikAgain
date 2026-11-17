@@ -9,6 +9,9 @@ public class Location : LocationColleague, ILocation
 
     public LocationDefinition Definition => locationDefinition;
 
+    public int NodeId { get; private set; }
+    public void SetNodeId(int id) => NodeId = id;
+
     void Awake()
     {
         if (startingLocation != null) Initialize(startingLocation);

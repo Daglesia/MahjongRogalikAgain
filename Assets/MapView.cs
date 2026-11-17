@@ -16,21 +16,30 @@ public class MapView : MonoBehaviour
     [SerializeField] private float lineWidth = 0.05f;
     [SerializeField] private float cameraMargin = 1f;
 
+    [Header("Player")]
+    [Tooltip("Optional. A simple circle is generated if empty.")]
+    [SerializeField] private Sprite playerSprite;
+    [SerializeField] private float playerSize = 0.35f;
+
     private Transform nodesRoot;
     private Transform edgesRoot;
     private readonly Dictionary<LocationType, LocationBase> byType = new Dictionary<LocationType, LocationBase>();
 
     void Start()
     {
-        if (RunManager.Instance.State == null) RunManager.Instance.StartNewRun();
-        int seed = RunManager.Instance.State.Seed;
+        RunManager run = RunManager.Instance;
+        if (run.State == null) run.StartNewRun();
+        RunState state = run.State;
 
         foreach (var asset in catalog)
             if (asset != null) byType[asset.GetLocationType()] = asset;
 
-        MapData map = generator.GenerateMap(seed);
-        Build(map);
-        FitCamera(map);
+        // Generate once and keep it in the run, so coming back to the map reuses it
+        if (state.Map == null) state.Map = generator.GenerateMap(state.Seed);
+
+        Build(state.Map);
+        FitCamera(state.Map);
+        SpawnPlayer(state.CurrentNode);
     }
 
     private void Build(MapData map)
@@ -79,6 +88,7 @@ public class MapView : MonoBehaviour
         go.AddComponent<BoxCollider2D>();
         var location = go.AddComponent<Location>();
         location.Initialize(asset);
+        location.SetNodeId(node.Id);
 
         // Location doesn't set its own sprite
         sr.sprite = location.Definition.GetLocationSprite();
@@ -127,5 +137,43 @@ public class MapView : MonoBehaviour
         cam.orthographic = true;
         cam.orthographicSize = Mathf.Max(bounds.size.y / 2f, bounds.size.x / 2f / cam.aspect);
         cam.transform.position = new Vector3(bounds.center.x, bounds.center.y, -10f);
+    }
+
+    private void SpawnPlayer(MapNode node)
+    {
+        var go = new GameObject("Player");
+        go.transform.SetParent(transform, false);
+
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = playerSprite != null ? playerSprite : CreateCircleSprite();
+        sr.sortingOrder = 2;
+
+        float s = playerSize / sr.sprite.bounds.size.x;
+        go.transform.localScale = new Vector3(s, s, 1f);
+
+        var marker = go.AddComponent<PlayerMarker>();
+        marker.PlaceAt(node.Position);
+
+        var mediator = FindAnyObjectByType<LocationMediator>();
+        if (mediator != null) mediator.RegisterPlayer(marker);
+        else Debug.LogWarning("MapView: no LocationMediator in the scene.");
+    }
+
+    private static Sprite CreateCircleSprite()
+    {
+        const int size = 64;
+        var tex = new Texture2D(size, size, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear };
+        var pixels = new Color[size * size];
+        var center = new Vector2(size / 2f, size / 2f);
+        var fill = new Color(1f, 0.85f, 0.2f, 1f);
+
+        for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+                pixels[y * size + x] = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), center) <= size / 2f - 1f
+                    ? fill : Color.clear;
+
+        tex.SetPixels(pixels);
+        tex.Apply();
+        return Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
     }
 }

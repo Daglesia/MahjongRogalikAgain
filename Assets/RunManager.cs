@@ -2,10 +2,13 @@
 public class RunState
 {
     public int Seed;
-    //public MapData Map;
+    public MapData Map;
+    public int CurrentNodeId;          // node the player stands on (0 = Start)
     //public List<CardData> Deck = new();
     //public List<ModifierData> Modifiers = new();
     public int CurrentFloor;
+
+    public MapNode CurrentNode => Map != null ? Map.Nodes[CurrentNodeId] : null;
 }
 
 public class RunManager : Singleton<RunManager>
@@ -16,9 +19,9 @@ public class RunManager : Singleton<RunManager>
     public void StartNewRun(int? seed = null)
     {
         int s = seed ?? System.Environment.TickCount;
-        State = new RunState { Seed = s };
+        State = new RunState { Seed = s, CurrentNodeId = 0 };
         Rng = new System.Random(s);
-        // generate map, starting deck...
+        // starting deck...
     }
 
     public void LoadRun(RunState saved) { /* restore state, rebuild Rng */ }
