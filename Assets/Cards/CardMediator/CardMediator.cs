@@ -23,7 +23,8 @@ public class CardMediator : MonoBehaviour, ICardMediator
     private bool _combatOver;
     private bool _resolvingLastTurn;   // last turn ended, waiting for the score queue to drain
 
-    private bool InputLocked => _combatOver || _resolvingLastTurn;
+    // The deck overlay is a Canvas, so it cannot block world-space OnMouseDown card clicks.
+    private bool InputLocked => _combatOver || _resolvingLastTurn || DeckView.AnyOpen;
 
     private void Awake()
     {

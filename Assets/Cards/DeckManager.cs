@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DeckManager : CardColleague
@@ -8,6 +9,26 @@ public class DeckManager : CardColleague
     private readonly List<CardBase> usedPile = new List<CardBase>();
 
     public int GetCount() => deck.Count;
+
+    /// All cards that are still in the draw pile (not drawn into the hand and not used),
+    /// sorted by card identity so the view never reveals the shuffled order.
+    public IReadOnlyList<CardBase> GetRemainingCardsSorted()
+    {
+        if (deck == null) return Array.Empty<CardBase>();
+
+        return deck.GetCards()
+            .OfType<CardBase>()
+            .OrderBy(CardSortKey)
+            .ThenBy(card => card.name, StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private static int CardSortKey(CardBase card)
+    {
+        CardValue[] values = card.GetCardValues();
+        return values != null && values.Length > 0 ? (int)values[0] : int.MaxValue;
+    }
+
     public event Action<CardBase, int> CardDrawn;
     public event Action<int> DeckReshuffled;   // cards in the deck after reshuffling
 

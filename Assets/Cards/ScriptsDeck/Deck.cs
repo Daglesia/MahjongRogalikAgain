@@ -31,4 +31,8 @@ public class Deck
     }
 
     public void Add(ICard card) => cards.Add(card);
+
+    /// Cards still in the draw pile, in shuffle order.
+    /// Callers that display them should sort the result first.
+    public IEnumerable<ICard> GetCards() => cards;
 }
