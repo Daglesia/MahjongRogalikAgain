@@ -74,6 +74,41 @@ public class HandManager : CardColleague
             SpawnIntoHand(drawSource(), slot);
     }
 
+    public bool IsBusy { get; private set; }
+
+    /// End-of-turn: the whole hand flies away, onCleared receives the removed cards
+    /// (so the caller can return them to the deck and reshuffle), then a fresh hand is dealt.
+    public void ReplaceHand(Func<CardBase> drawSource, Action<List<CardBase>> onCleared)
+    {
+        if (IsBusy) return;
+        StartCoroutine(ReplaceHandRoutine(drawSource, onCleared));
+    }
+
+    private IEnumerator ReplaceHandRoutine(Func<CardBase> drawSource, Action<List<CardBase>> onCleared)
+    {
+        IsBusy = true;
+
+        // Cards that already flew away are unparented, so the children are exactly the current hand
+        var cards = new List<Card>();
+        for (int i = 0; i < hand.transform.childCount; i++)
+            if (hand.transform.GetChild(i).TryGetComponent<Card>(out var card))
+                cards.Add(card);
+
+        var removed = new List<CardBase>(cards.Count);
+        foreach (Card card in cards)
+        {
+            removed.Add(card.GetCardBase());
+            FlyAndDisappear(card);
+        }
+
+        onCleared?.Invoke(removed);   // caller reshuffles the deck before we draw
+
+        yield return new WaitForSeconds(flyDelay + flyDuration);
+        yield return DealRoutine(drawSource, startingHandSize);
+
+        IsBusy = false;
+    }
+
     // ---------- Internals ----------
 
     private IEnumerator DealRoutine(Func<CardBase> drawSource, int count)

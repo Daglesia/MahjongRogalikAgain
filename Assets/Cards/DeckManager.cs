@@ -5,9 +5,11 @@ using UnityEngine;
 public class DeckManager : CardColleague
 {
     private Deck deck;
+    private readonly List<CardBase> usedPile = new List<CardBase>();
 
     public int GetCount() => deck.Count;
     public event Action<CardBase, int> CardDrawn;
+    public event Action<int> DeckReshuffled;   // cards in the deck after reshuffling
 
     void Awake()
     {
@@ -34,5 +36,26 @@ public class DeckManager : CardColleague
 
         CardDrawn?.Invoke(card, deck.Count);
         return card;
+    }
+
+    /// Played / discarded / thrown-away cards end up here until the next reshuffle.
+    public void AddToUsedPile(CardBase card)
+    {
+        if (card != null) usedPile.Add(card);
+    }
+
+    public void AddToUsedPile(IEnumerable<CardBase> cards)
+    {
+        foreach (CardBase card in cards) AddToUsedPile(card);
+    }
+
+    /// Puts the used pile back into the deck and shuffles everything.
+    public void ReshuffleUsedIntoDeck()
+    {
+        foreach (CardBase card in usedPile) deck.Add(card);
+        usedPile.Clear();
+
+        deck.Shuffle();
+        DeckReshuffled?.Invoke(deck.Count);
     }
 }

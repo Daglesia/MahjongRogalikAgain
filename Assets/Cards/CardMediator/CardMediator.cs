@@ -10,6 +10,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
     [SerializeField] private InventoryManager _inventoryManager;
     [SerializeField] private AudioManager _audioManager;
     [SerializeField] private ScoreManager _scoreManager;
+    [SerializeField] private TurnManager _turnManager;
 
     private TargetedItemBase pendingItem;
     private int pendingSlot = -1;
@@ -23,6 +24,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
         _inventoryManager.SetMediator(this);
         _audioManager.SetMediator(this);
         _scoreManager.SetMediator(this);
+        _turnManager.SetMediator(this);
     }
 
     private void Start() => _handManager.DealStartingHand(_deckManager.DrawNextCard);
@@ -41,7 +43,6 @@ public class CardMediator : MonoBehaviour, ICardMediator
 
     void ICardMediator.NotifyCardDeselected(Card card)
     {
-        // While targeting an item, clicks on selected cards shouldn't do anything special
         if (pendingItem != null) return;
 
         _comboManager.RemoveCardFromCombo(card);
@@ -62,6 +63,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
 
         _scoreManager.ScoreCombo(comboType, selectedCards);
 
+        SendToUsedPile(selectedCards);
         _handManager.RemoveAndReplace(selectedCards, _deckManager.DrawNextCard);
     }
 
@@ -72,7 +74,30 @@ public class CardMediator : MonoBehaviour, ICardMediator
         if (card.Definition.GetIsClicked()) return;
         if (!_discardManager.TryUseDiscard()) return;
 
-        _handManager.RemoveAndReplace(new List<Card> { card }, _deckManager.DrawNextCard);
+        var discarded = new List<Card> { card };
+        SendToUsedPile(discarded);
+        _handManager.RemoveAndReplace(discarded, _deckManager.DrawNextCard);
+    }
+
+    void ICardMediator.NotifyEndTurnRequested()
+    {
+        if (_handManager.IsBusy) return;   // already redrawing
+
+        CancelTargeting();
+        _comboManager.ClearSelection();
+
+        if (_turnManager.IsLastTurn)
+        {
+            EndCombat();
+            return;
+        }
+
+        _turnManager.TryAdvanceTurn();
+        _handManager.ReplaceHand(_deckManager.DrawNextCard, removed =>
+        {
+            _deckManager.AddToUsedPile(removed);
+            _deckManager.ReshuffleUsedIntoDeck();
+        });
     }
 
     void ICardMediator.NotifyItemClicked(int slotIndex)
@@ -82,7 +107,6 @@ public class CardMediator : MonoBehaviour, ICardMediator
 
         if (item is TargetedItemBase targeted)
         {
-            // clicking the armed item again cancels it
             if (pendingSlot == slotIndex) CancelTargeting();
             else BeginTargeting(targeted, slotIndex);
             return;
@@ -92,6 +116,20 @@ public class CardMediator : MonoBehaviour, ICardMediator
         var context = new ItemContext(_deckManager, _discardManager, _handManager);
         if (item.Use(context) && item.Consumable)
             _inventoryManager.RemoveItem(slotIndex);
+    }
+
+    // ---------- Combat flow ----------
+
+    private void EndCombat()
+    {
+        // todo: win/lose check against a score target, rewards, etc.
+        SceneLoader.Instance.ReturnToMap();
+    }
+
+    private void SendToUsedPile(IEnumerable<Card> cards)
+    {
+        foreach (Card card in cards)
+            _deckManager.AddToUsedPile(card.GetCardBase());
     }
 
     // ---------- Item targeting ----------
@@ -111,10 +149,9 @@ public class CardMediator : MonoBehaviour, ICardMediator
 
     private void ResolveItemTarget(Card card)
     {
-        // Card.OnMouseDown already flagged it as clicked; targeting must not count as a combo selection
         card.Deselect();
 
-        if (!pendingItem.CanTarget(card)) return;   // invalid target: stay armed, player can pick another
+        if (!pendingItem.CanTarget(card)) return;
 
         var context = new ItemContext(_deckManager, _discardManager, _handManager);
         if (!pendingItem.UseOnCard(context, card)) return;

@@ -14,12 +14,16 @@ public class CardsLeftText : MonoBehaviour
     void OnEnable()
     {
         deckManager.CardDrawn += OnCardDrawn;
+        deckManager.DeckReshuffled += OnDeckReshuffled;
     }
 
     void OnDisable()
     {
         deckManager.CardDrawn -= OnCardDrawn;
+        deckManager.DeckReshuffled -= OnDeckReshuffled;
     }
+
+    private void OnDeckReshuffled(int cardsLeft) => label.text = cardsLeft.ToString();
 
     private void OnCardDrawn(CardBase card, int cardsLeft)
     {

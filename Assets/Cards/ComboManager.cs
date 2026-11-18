@@ -98,4 +98,10 @@ public class ComboManager : CardColleague
         selectedCards.RemoveAt(index);
         cards.RemoveAt(index);   // cards and selectedCards are kept in the same order
     }
+
+    public void ClearSelection()
+    {
+        selectedCards.Clear();
+        cards.Clear();
+    }
 }
