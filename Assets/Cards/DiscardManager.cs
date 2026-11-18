@@ -30,4 +30,10 @@ public class DiscardManager : CardColleague
     discardsLeft += amount;
     DiscardsChanged?.Invoke(discardsLeft);
 }
+
+    public void ResetDiscards()
+    {
+        discardsLeft = startingDiscards;
+        DiscardsChanged?.Invoke(discardsLeft);
+    }
 }

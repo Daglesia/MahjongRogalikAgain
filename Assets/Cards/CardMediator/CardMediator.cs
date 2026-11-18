@@ -111,6 +111,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
         }
 
         _turnManager.TryAdvanceTurn();
+        _discardManager.ResetDiscards();
         _handManager.ReplaceHand(_deckManager.DrawNextCard, removed =>
         {
             _deckManager.AddToUsedPile(removed);
