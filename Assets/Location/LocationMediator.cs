@@ -3,11 +3,11 @@ using UnityEngine;
 public class LocationMediator : MonoBehaviour, ILocationMediator
 {
     [Tooltip("Optional. Found automatically in the scene if left empty.")]
-    [SerializeField] private EquivalentExchangeView exchangeView;
+    [SerializeField] private ViewManager viewManager;
 
     private PlayerMarker player;
     private bool isMoving;
-    private bool inEvent;   // a location view (e.g. Equivalent Exchange) is open or transitioning
+    private bool inEvent;   // a location view is open or transitioning
 
     public void RegisterPlayer(PlayerMarker marker) => player = marker;
 
@@ -47,10 +47,10 @@ public class LocationMediator : MonoBehaviour, ILocationMediator
                 break;
 
             case LocationType.EquivalentExchange:
-                EnterEquivalentExchange();
+                OpenView<EquivalentExchangeView>();
                 break;
 
-            // todo: Shop, Stone, CardFreebie, BlackHole
+            // todo: Shop, Stone, CardFreebie, BlackHole -> OpenView<ShopView>() etc.
             default:
                 break;
         }
@@ -63,17 +63,20 @@ public class LocationMediator : MonoBehaviour, ILocationMediator
         SceneLoader.Instance.StartCombat(context);
     }
 
-    private void EnterEquivalentExchange()
+    private void OpenView<T>() where T : ViewBase
     {
-        if (exchangeView == null) exchangeView = FindAnyObjectByType<EquivalentExchangeView>();
-        if (exchangeView == null)
+        if (viewManager == null) viewManager = FindAnyObjectByType<ViewManager>();
+        if (viewManager == null)
         {
-            Debug.LogError("LocationMediator: no EquivalentExchangeView in the scene.", this);
+            Debug.LogError("LocationMediator: no ViewManager in the scene.", this);
             return;
         }
 
+        T view = viewManager.Get<T>();
+        if (view == null) return;
+
         inEvent = true;   // map nodes use OnMouseDown, which UI does not block
-        exchangeView.Show(RunManager.Instance.State, () => inEvent = false);
+        view.Open(RunManager.Instance.State, () => inEvent = false);
     }
 
     public void NotifyLocationExit(Location location)
