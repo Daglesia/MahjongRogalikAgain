@@ -2,26 +2,29 @@ using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(ItemArt))]
 public class ItemSlot : CardColleague
 {
     private int index;
-    private SpriteRenderer sr;
     private Collider2D col;
+    private ItemArt art;
+
+    public ItemBase CurrentItem { get; private set; }
 
     public void Init(int slotIndex)
     {
         index = slotIndex;
-        sr = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
+        art = GetComponent<ItemArt>();
     }
 
     void Start() => Mediator = FindAnyObjectByType<CardMediator>();
 
     public void Show(ItemBase item)
     {
-        if (sr == null) Init(index);
-        sr.sprite = item != null ? item.icon : null;
-        sr.enabled = item != null;
+        if (art == null) Init(index);
+        CurrentItem = item;
+        art.Refresh();
         col.enabled = item != null;
     }
 
