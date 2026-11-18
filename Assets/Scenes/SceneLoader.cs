@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,6 +34,36 @@ public class SceneLoader : Singleton<SceneLoader>
         if (loading) return;
         CurrentCombat = null;
         StartCoroutine(Load(MapSceneName));
+    }
+
+    /// Fades to black, runs onBlack while the screen is fully black, then fades back in and calls onDone.
+    /// Returns false (and does nothing) if another transition/scene load is already running.
+    public bool Transition(Action onBlack, Action onDone = null)
+    {
+        if (loading) return false;
+        StartCoroutine(TransitionRoutine(onBlack, onDone));
+        return true;
+    }
+
+    private IEnumerator TransitionRoutine(Action onBlack, Action onDone)
+    {
+        loading = true;
+
+        EnsureFadeOverlay();
+        fadeGroup.blocksRaycasts = true;
+        yield return Fade(0f, 1f, fadeInDuration);
+
+        if (blackHoldDuration > 0f) yield return new WaitForSecondsRealtime(blackHoldDuration);
+        onBlack?.Invoke();
+        yield return null; // let the change take effect before revealing
+        if (revealDelayDuration > 0f) yield return new WaitForSecondsRealtime(revealDelayDuration);
+
+        yield return Fade(1f, 0f, fadeOutDuration);
+        fadeGroup.blocksRaycasts = false;
+        fadeGroup.gameObject.SetActive(false);
+        loading = false;
+
+        onDone?.Invoke();
     }
 
     private IEnumerator Load(string sceneName)

@@ -2,8 +2,12 @@ using UnityEngine;
 
 public class LocationMediator : MonoBehaviour, ILocationMediator
 {
+    [Tooltip("Optional. Found automatically in the scene if left empty.")]
+    [SerializeField] private EquivalentExchangeView exchangeView;
+
     private PlayerMarker player;
     private bool isMoving;
+    private bool inEvent;   // a location view (e.g. Equivalent Exchange) is open or transitioning
 
     public void RegisterPlayer(PlayerMarker marker) => player = marker;
 
@@ -12,7 +16,7 @@ public class LocationMediator : MonoBehaviour, ILocationMediator
         // Location flags itself as clicked; a map node is never a "selected" toggle
         location.Deselect();
 
-        if (isMoving || player == null) return;
+        if (isMoving || inEvent || player == null) return;
 
         RunState state = RunManager.Instance.State;
         if (state?.Map == null) return;
@@ -42,7 +46,11 @@ public class LocationMediator : MonoBehaviour, ILocationMediator
                 EnterCombat(type);
                 break;
 
-            // todo: Shop, EquivalentExchange, Stone, CardFreebie, BlackHole
+            case LocationType.EquivalentExchange:
+                EnterEquivalentExchange();
+                break;
+
+            // todo: Shop, Stone, CardFreebie, BlackHole
             default:
                 break;
         }
@@ -53,6 +61,19 @@ public class LocationMediator : MonoBehaviour, ILocationMediator
         RunState state = RunManager.Instance.State;
         var context = CombatContext.FromRun(state, type);
         SceneLoader.Instance.StartCombat(context);
+    }
+
+    private void EnterEquivalentExchange()
+    {
+        if (exchangeView == null) exchangeView = FindAnyObjectByType<EquivalentExchangeView>();
+        if (exchangeView == null)
+        {
+            Debug.LogError("LocationMediator: no EquivalentExchangeView in the scene.", this);
+            return;
+        }
+
+        inEvent = true;   // map nodes use OnMouseDown, which UI does not block
+        exchangeView.Show(RunManager.Instance.State, () => inEvent = false);
     }
 
     public void NotifyLocationExit(Location location)
