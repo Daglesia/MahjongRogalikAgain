@@ -29,6 +29,7 @@ public class ScoreManager : CardColleague
     private int totalScore;
 
     public int Total => totalScore;
+    public bool IsBusy => processing || queue.Count > 0;
     public event Action<int> ScoreChanged;
 
     void Start()
@@ -98,6 +99,7 @@ public class ScoreManager : CardColleague
             totalScore += score.Points;
             UpdateTotalLabel();
             ScoreChanged?.Invoke(totalScore);
+            Mediator?.NotifyScoreChanged(totalScore);
         }
 
         processing = false;

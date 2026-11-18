@@ -9,4 +9,5 @@ public interface ICardMediator
     void NotifyComboAssembled(ComboType comboType, List<Card> selectedCards);
     void NotifyItemClicked(int slotIndex);
     void NotifyEndTurnRequested();
+    void NotifyScoreChanged(int totalScore);
 }
