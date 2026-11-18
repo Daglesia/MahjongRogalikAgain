@@ -50,7 +50,11 @@ public class LocationMediator : MonoBehaviour, ILocationMediator
                 OpenView<EquivalentExchangeView>();
                 break;
 
-            // todo: Shop, Stone, CardFreebie, BlackHole -> OpenView<ShopView>() etc.
+            case LocationType.Shop:
+                OpenView<ShopView>();
+                break;
+
+            // todo: Stone, CardFreebie, BlackHole -> OpenView<...View>() etc.
             default:
                 break;
         }

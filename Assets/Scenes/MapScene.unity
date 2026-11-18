@@ -333,6 +333,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ViewManager
   viewPrefabs:
   - {fileID: 6925849107042446894, guid: 67737686620f9114da6db4e0fca69c61, type: 3}
+  - {fileID: 1397197866337086876, guid: 8104a6f9450e5da4382c4ea6c37ab67a, type: 3}
 --- !u!4 &1370452819
 Transform:
   m_ObjectHideFlags: 0
