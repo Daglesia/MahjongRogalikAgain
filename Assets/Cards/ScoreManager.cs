@@ -53,6 +53,13 @@ public class ScoreManager : CardColleague
         if (!processing) StartCoroutine(ProcessQueue());
     }
 
+    /// Called at the end of a turn for bonuses (Full Straight, 21st, ...).
+    public void AddBonus(string bonusName, int points)
+    {
+        queue.Enqueue(new PendingScore { Text = $"{bonusName}  +{points}", Points = points });
+        if (!processing) StartCoroutine(ProcessQueue());
+    }
+
     private PendingScore EvaluateTriplet(IReadOnlyList<Card> cards)
     {
         // Find the value shared by all 3 cards; prefer an element if several match

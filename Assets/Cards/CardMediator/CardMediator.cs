@@ -11,6 +11,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
     [SerializeField] private InventoryManager _inventoryManager;
     [SerializeField] private AudioManager _audioManager;
     [SerializeField] private ScoreManager _scoreManager;
+    [SerializeField] private ComboStarManager _comboStarManager;
     [SerializeField] private TurnManager _turnManager;
     [SerializeField] private EncounterManager _encounterManager;
 
@@ -35,6 +36,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
         _inventoryManager.SetMediator(this);
         _audioManager.SetMediator(this);
         _scoreManager.SetMediator(this);
+        _comboStarManager.SetMediator(this);
         _turnManager.SetMediator(this);
         _encounterManager.SetMediator(this);
     }
@@ -80,6 +82,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
             : SoundType.SequencePlayed);
 
         _scoreManager.ScoreCombo(comboType, selectedCards);
+        _comboStarManager.RegisterCombo(comboType, _comboManager.LastComboValues);
 
         SendToUsedPile(selectedCards);
         _handManager.RemoveAndReplace(selectedCards, _deckManager.DrawNextCard);
@@ -104,6 +107,9 @@ public class CardMediator : MonoBehaviour, ICardMediator
 
         CancelTargeting();
         _comboManager.ClearSelection();
+
+        foreach (ComboBonusDefinition bonus in _comboStarManager.ConcludeTurn())
+            _scoreManager.AddBonus(bonus.Name, bonus.Points);
 
         if (_turnManager.IsLastTurn)
         {

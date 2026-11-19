@@ -22,4 +22,11 @@ public class ComboPieces
     {
         comboPiecesStatuses[value] = status;
     }
+
+    public void Reset()
+    {
+        foreach (CardValue value in Enum.GetValues(typeof(CardValue)))
+            if (comboPiecesStatuses[value] != ComboActiveStatus.Disabled)
+                comboPiecesStatuses[value] = ComboActiveStatus.NotActive;
+    }
 }

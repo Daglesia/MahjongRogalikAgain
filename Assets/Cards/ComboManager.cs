@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,10 +8,10 @@ public enum ComboType { None, Sequence, Triplet }
 public class ComboManager : CardColleague
 {
     public ComboType LastComboType { get; private set; } = ComboType.None;
+    public CardValue[] LastComboValues { get; private set; } = Array.Empty<CardValue>();
 
     private List<ICard> cards = new List<ICard>();
     private readonly List<Card> selectedCards = new List<Card>();
-    private ComboPieces comboPieces = new ComboPieces();
 
     private static readonly int[][] PERMUTATIONS =
     {
@@ -19,7 +20,7 @@ public class ComboManager : CardColleague
         new[] { 2, 0, 1 }, new[] { 2, 1, 0 },
     };
 
-    private bool IsSequence()
+    private bool TryGetSequence(out CardValue[] values)
     {
         int first = (int)CardValue.Bamboo1;
         int last = (int)CardValue.Bamboo6;
@@ -32,34 +33,47 @@ public class ComboManager : CardColleague
                     cards[order[1]].GetCardValues().Contains((CardValue)(start + 1)) &&
                     cards[order[2]].GetCardValues().Contains((CardValue)(start + 2)))
                 {
+                    values = new[] { (CardValue)start, (CardValue)(start + 1), (CardValue)(start + 2) };
                     return true;
                 }
             }
         }
 
+        values = Array.Empty<CardValue>();
         return false;
     }
-    
-    private bool IsTriplet()
+
+    private bool TryGetTriplet(out CardValue result)
     {
+        bool found = false;
+        result = default;
+
         foreach (CardValue value in cards[0].GetCardValues())
         {
-            if (cards[1].GetCardValues().Contains(value) &&
-                cards[2].GetCardValues().Contains(value))
+            if (!cards[1].GetCardValues().Contains(value) ||
+                !cards[2].GetCardValues().Contains(value)) continue;
+
+            if (!found || value >= CardValue.Earth)   // prefer an element if several match
             {
-                Debug.Log(value+" cyckiii");
-                return true;
+                result = value;
+                found = true;
             }
         }
 
-        return false;
+        return found;
     }
 
-    private ComboType GetComboType()
+    private ComboType ResolveCombo(out CardValue[] values)
     {
-        if (IsTriplet()) return ComboType.Triplet;
-        if (IsSequence()) return ComboType.Sequence;
-        return ComboType.None;
+        if (TryGetTriplet(out CardValue shared))
+        {
+            values = new[] { shared };
+            return ComboType.Triplet;
+        }
+
+        if (TryGetSequence(out values)) return ComboType.Sequence;
+
+        return ComboType.None;   // values is already empty from TryGetSequence
     }
 
     public void AddCardToCombo(Card card)
@@ -69,22 +83,10 @@ public class ComboManager : CardColleague
 
         if (cards.Count < 3) return;
 
-        ComboType comboType = GetComboType();
+        ComboType comboType = ResolveCombo(out CardValue[] values);
         LastComboType = comboType;
+        LastComboValues = values;   // must be set before notifying
         Mediator?.NotifyComboAssembled(comboType, selectedCards);
-
-        if (comboType != ComboType.None)
-        {
-            ComboActiveStatus comboStatus = comboType == ComboType.Triplet
-                ? ComboActiveStatus.ActiveByTriplet
-                : ComboActiveStatus.ActiveBySequence;
-
-            foreach (Card selectedCard in selectedCards)
-            {
-                // todo get card value that was used in this sequence/triplet
-                // comboPieces.SetActiveStatus(selectedCard.GetCardBase().GetCardValues(), comboStatus);
-            }
-        }
 
         selectedCards.Clear();
         cards.Clear();
