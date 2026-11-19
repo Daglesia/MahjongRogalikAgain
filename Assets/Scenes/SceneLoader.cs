@@ -8,6 +8,7 @@ public class SceneLoader : Singleton<SceneLoader>
 {
     public const string MapSceneName = "MapScene";
     public const string CombatSceneName = "CombatScene";
+    public const string MenuSceneName = "MenuScene";
 
     [Header("Transition")]
     [SerializeField, Min(0f)] private float fadeInDuration = 0.15f;
@@ -34,6 +35,20 @@ public class SceneLoader : Singleton<SceneLoader>
         if (loading) return;
         CurrentCombat = null;
         StartCoroutine(Load(MapSceneName));
+    }
+
+    public void LoadMap()
+    {
+        if (loading) return;
+        CurrentCombat = null;
+        StartCoroutine(Load(MapSceneName));
+    }
+
+    public void LoadMenu()
+    {
+        if (loading) return;
+        CurrentCombat = null;
+        StartCoroutine(Load(MenuSceneName));
     }
 
     /// Fades to black, runs onBlack while the screen is fully black, then fades back in and calls onDone.
