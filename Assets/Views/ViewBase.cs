@@ -18,6 +18,12 @@ public abstract class ViewBase : MonoBehaviour, IView
     protected bool IsBusy => busy;
     public bool IsOpen { get; private set; }
 
+    /// Views that must appear instantly (pause) override this with false.
+    protected virtual bool UseTransition => true;
+
+    /// For views that build their UI in code instead of in a prefab.
+    protected void SetContent(GameObject value) => content = value;
+
     protected virtual void Awake()
     {
         if (content == null)
@@ -38,6 +44,15 @@ public abstract class ViewBase : MonoBehaviour, IView
         State = state;
         this.onClosed = onClosed;
 
+        EnsureEventSystem();
+
+        if (!UseTransition)
+        {
+            ShowContent();
+            busy = false;
+            return;
+        }
+
         bool started = SceneLoader.Instance.Transition(
             onBlack: ShowContent,
             onDone: () => busy = false);
@@ -52,6 +67,14 @@ public abstract class ViewBase : MonoBehaviour, IView
     public void Close()
     {
         if (!IsOpen || busy) return;
+
+        if (!UseTransition)
+        {
+            HideContent();
+            Finish();
+            return;
+        }
+
         busy = true;
 
         bool started = SceneLoader.Instance.Transition(onBlack: HideContent, onDone: Finish);

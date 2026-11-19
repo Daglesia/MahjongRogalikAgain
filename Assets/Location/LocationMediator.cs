@@ -16,7 +16,7 @@ public class LocationMediator : MonoBehaviour, ILocationMediator
         // Location flags itself as clicked; a map node is never a "selected" toggle
         location.Deselect();
 
-        if (isMoving || inEvent || player == null) return;
+        if (isMoving || inEvent || player == null || PauseView.AnyOpen) return;
 
         RunState state = RunManager.Instance.State;
         if (state?.Map == null) return;

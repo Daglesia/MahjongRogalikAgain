@@ -15,7 +15,7 @@ public class RestOfDeckClick : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (deckView == null || deckView.IsOpen) return;   // instance property from ViewBase
+        if (deckView == null || deckView.IsOpen || PauseView.AnyOpen) return;   // instance property from ViewBase
         deckView.Show();
     }
 }
