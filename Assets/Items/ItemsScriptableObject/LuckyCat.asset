@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e53c8d9aec8a5c74fbb06a61a7d6f3fe, type: 3}
-  m_Name: SetTo3
+  m_Name: LuckyCat
   m_EditorClassIdentifier: Assembly-CSharp::SetCardValueItem
   icon: {fileID: 1825629299370863141, guid: d3bb930f75647434e824863c72ca3dd8, type: 3}
-  itemName: Set to three
+  itemName: Lucky cat
   description: 
   consumable: 1
   resultCard: {fileID: 11400000, guid: 56bc773087e120e43bc47a955bffa848, type: 2}

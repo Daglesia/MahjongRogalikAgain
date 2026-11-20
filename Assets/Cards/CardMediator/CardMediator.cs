@@ -14,6 +14,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
     [SerializeField] private ComboStarManager _comboStarManager;
     [SerializeField] private TurnManager _turnManager;
     [SerializeField] private EncounterManager _encounterManager;
+    [SerializeField] private TargetingArrow _targetingArrow;
 
     [Tooltip("How long the VICTORY / DEFEAT text stays up before returning to the map")]
     [SerializeField, Min(0f)] private float _resultDelay = 1.5f;
@@ -199,6 +200,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
     {
         pendingItem = item;
         pendingSlot = slot;
+        if (_targetingArrow != null) _targetingArrow.Show();
         // todo: highlight valid targets / the armed slot
     }
 
@@ -206,6 +208,7 @@ public class CardMediator : MonoBehaviour, ICardMediator
     {
         pendingItem = null;
         pendingSlot = -1;
+        if (_targetingArrow != null) _targetingArrow.Hide();
     }
 
     private void ResolveItemTarget(Card card)
