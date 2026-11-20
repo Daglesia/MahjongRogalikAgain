@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,15 +8,25 @@ public class Card : CardColleague
 {
     [SerializeField] private CardBase startingCard;
 
+    [Header("Hover")]
+    [Tooltip("1 = no change. 1.06 = 6% bigger.")]
+    [SerializeField, Min(1f)] private float hoverScale = 1.06f;
+    [SerializeField, Min(0f)] private float hoverDuration = 0.12f;
+
     private CardDefinition cardDefinition;
     private Vector3 basePosition;
     private bool baseSet;
+    private Vector3 baseScale;
+    private Tween hoverTween;
 
     public CardDefinition Definition => cardDefinition;
     public Vector3 BasePosition => basePosition;
+    /// Scale without the hover effect (HandLayout uses it so hovering never changes the layout).
+    public Vector3 BaseScale => baseScale;
 
     void Awake()
     {
+        baseScale = transform.localScale;
         if (startingCard != null) Initialize(startingCard);
     }
 
@@ -40,13 +51,31 @@ public class Card : CardColleague
 
     public void Deselect() => cardDefinition.SetClicked(false);
 
-    public void SetInteractable(bool value) => GetComponent<Collider2D>().enabled = value;
+    public void SetInteractable(bool value)
+    {
+        GetComponent<Collider2D>().enabled = value;
+
+        if (!value)
+        {
+            // A disabled collider never sends OnMouseExit, so reset the hover by hand
+            hoverTween?.Kill();
+            transform.localScale = baseScale;
+        }
+    }
 
     void Start()
     {
         if (!baseSet) basePosition = transform.position;
         Mediator = FindAnyObjectByType<CardMediator>();
     }
+
+    void OnMouseEnter()
+    {
+        if (DeckView.AnyOpen) return;
+        SetHovered(true);
+    }
+
+    void OnMouseExit() => SetHovered(false);
 
     void OnMouseDown()
     {
@@ -70,8 +99,19 @@ public class Card : CardColleague
     }
 
     public void ReplaceCardBase(CardBase newBase)
-{
-    cardDefinition.SetCard(newBase);
-    if (TryGetComponent<CardArt>(out var art)) art.Refresh();
-}
+    {
+        cardDefinition.SetCard(newBase);
+        if (TryGetComponent<CardArt>(out var art)) art.Refresh();
+    }
+
+    private void SetHovered(bool hovered)
+    {
+        hoverTween?.Kill();
+
+        Vector3 target = hovered ? baseScale * hoverScale : baseScale;
+        hoverTween = transform.DOScale(target, hoverDuration)
+                              .SetEase(Ease.OutQuad)
+                              .SetTarget(this)               // NOT the transform: HandManager calls transform.DOKill() for the lift
+                              .SetLink(gameObject);
+    }
 }

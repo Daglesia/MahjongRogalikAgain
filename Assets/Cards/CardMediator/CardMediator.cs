@@ -200,8 +200,9 @@ public class CardMediator : MonoBehaviour, ICardMediator
     {
         pendingItem = item;
         pendingSlot = slot;
-        if (_targetingArrow != null) _targetingArrow.Show();
-        // todo: highlight valid targets / the armed slot
+        if (_targetingArrow != null)
+            _targetingArrow.Show(card => item.CanTarget(card));
+        // todo: highlight the armed slot
     }
 
     private void CancelTargeting()

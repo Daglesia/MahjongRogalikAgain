@@ -103,10 +103,14 @@ public class HandLayout : MonoBehaviour
                            .OnKill(() => tweens.Remove(t));
     }
 
-    // Width in the Hand's local space = sprite size * child's local scale
+    // Width in the Hand's local space = sprite size * child's local scale.
+    // For cards use BaseScale, so a hover scale doesn't shift neighbours on relayout.
     private static float GetItemWidth(Transform child)
     {
-        float scaleX = Mathf.Abs(child.localScale.x);
+        float scaleX = child.TryGetComponent<Card>(out var c)
+            ? Mathf.Abs(c.BaseScale.x)
+            : Mathf.Abs(child.localScale.x);
+
         if (child.TryGetComponent<SpriteRenderer>(out var sr) && sr.sprite != null)
             return sr.sprite.bounds.size.x * scaleX;
         return scaleX;
